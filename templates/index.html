@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quarantine Centres Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 1.5em;
+        }
+        
+        #main-content {
+            width: 100%;
+            max-width: 40em;
+        }
+        
+        #main-content>div {
+            padding: 1em;
+            margin-bottom: 0.5em;
+            background-color: rgb(150, 200, 200);
+            box-shadow: 0.1em 0.1em 0.2em rgb(100, 100, 100);
+            font-size: 1.2em;
+        }
+        
+        #main-content div.error-message {
+            background-color: rgb(200, 180, 160);
+        }
+        
+        span.stat {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .material-icons {
+            display: inline-flex;
+            vertical-align: text-bottom;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quarantine Centres Dashboard</h1>
+    <div id="main-content">
+        {% if connected %} {% if has_data %}
+        <div>
+            <span class="material-icons">calendar_today</span> Quarantine data for
+            <span class="stat">{{ data.date }}</span>
+        </div>
+        <div>
+            <span class="material-icons" title="in use">outlined_flag</span> Quarantine units in use:
+            <span class="stat">{{ data.units_in_use }}</span>
+            <br>
+            <span class="material-icons" title="available">checklist_rtl</span> Quarantine units available:
+            <span class="stat">{{ data.units_available }}</span>
+        </div>
+        <div><span class="material-icons">insights</span> Highest availability is at:
+            <ul class="centres">
+                {% for centre in centres %}
+                <li class="centre">
+                    <span class="name">{{ centre.name }}</span>:
+                    <span class="stat">{{ centre.units }} unit{{ centre.units | pluralize }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <span class="material-icons">people</span> Number of persons quarantined:
+            <span class="stat">{{ data.persons_quarantined }}</span>
+            <br>
+            <span class="material-icons" title="non-close contacts">safety_divider</span> Non-close contacts:
+            <span class="stat">{{ data.non_close_contacts }}</span>
+        </div>
+        {% if data.count_consistent %}
+        <div>
+            <span class="material-icons">check</span> Count is consistent with quarantine records
+        </div>
+        {% else %}
+        <div class="error-message">
+            <span class="material-icons">warning</span> Warning: Count is not consistent with quarantine records
+        </div>
+        {% endif %} {% else %} {# no data available #}
+        <div class="error-message">
+            <span class="material-icons">error</span> Sorry, no data found within the past 7 days.
+        </div>
+        {% endif %} {# end-if has data #} {% else %} {# not connected #}
+        <div class="error-message">
+            <span class="material-icons">error</span> Sorry, something went wrong. Please try again later.
+        </div>
+        {% endif %} {# end-if connected #}
+    </div>
+</body>
+
+</html>
